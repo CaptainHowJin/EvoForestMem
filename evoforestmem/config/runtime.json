@@ -1,0 +1,10 @@
+{
+  "model": "Qwen3.5-35B-A3B-FP8",
+  "base_url": "http://localhost:8000/v1",
+  "judge_model": "DeepSeek-V4-Flash",
+  "judge_base_url": "http://localhost:8001/v1",
+  "embedding_model": "Qwen/Qwen3-Embedding-0.6B",
+  "tokenizer": "models/Qwen3.5-35B-A3B-FP8",
+  "device": "cpu",
+  "concurrency": 16
+}

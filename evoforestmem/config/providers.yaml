@@ -1,0 +1,6 @@
+credentials:
+  dotenv: true
+defaults:
+  kind: openai_compat
+  api_key_env: EVOFORESTMEM_LLM_API_KEY
+roles: {}

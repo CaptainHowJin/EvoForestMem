@@ -1,0 +1,9 @@
+checkpoint_stride: 4096
+source_weight: 0.35
+concurrency: 24
+embedding_batch_size: 32
+embedding_batch_tokens: 8192
+refresh_policy: change_gated
+scheduler: dependency_ready
+summary_profile: compact_v1
+maintenance_mode: incremental

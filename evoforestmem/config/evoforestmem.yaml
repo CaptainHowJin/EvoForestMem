@@ -1,0 +1,190 @@
+batch: '004'
+paths:
+  log: data/log/{batch}/messages.jsonl
+  speakers: data/log/{batch}/speakers.json
+  forest: data/forest/{batch}
+  placement: data/index/{batch}/placement.jsonl
+  lexicon: data/lexicon/{batch}/channel_lexicon.yaml
+  artifact_lexicon: data/lexicon/{batch}/artifact_clusters.yaml
+  embeddings: data/index/{batch}/embeddings
+  node_index: data/index/{batch}/node_index
+  bridges: data/index/{batch}/bridges.jsonl
+  validity: data/index/{batch}/validity.jsonl
+validity:
+  enabled: true
+  path: data/index/{batch}/validity.jsonl
+  supersede_overlap: 0.5
+ingest:
+  order: day_buffered
+update:
+  fork_on_marker: true
+  fork_threshold:
+    ever: 0.5
+    gmb-Finance: 0.0
+    gmb-Healthcare: 0.5
+    gmb-Manufacturing: 0.5
+    gmb-Technology: 0.0
+  graft:
+    enabled: false
+    tau: 0.0
+  artifact_incremental:
+    enabled: false
+forest:
+  repack: false
+  actor_about: true
+  views:
+    channel:
+      k: 16
+      rrf_k: 60
+      enabled: true
+      seal_on_append: true
+    actor:
+      k: 16
+      rrf_k: 60
+      enabled: true
+      seal_on_append: true
+    artifact:
+      k: 16
+      rrf_k: 60
+      enabled: true
+      seal_on_append: true
+s0:
+  enabled: true
+  lexicon: derived
+  stem: true
+  llm_fallback: false
+corpus_profiles:
+- match: gmb-*
+  set:
+    s1:
+      dense_weight: 0.0
+- match: ever*
+  set:
+    s1:
+      dense_weight: 0.5
+s1:
+  collapsed_recall: false
+  collapsed_k: 32
+  collapsed_dedup: true
+  w_collapsed: 0.0
+  msg_pool: 200
+  msg_rrf_k: 60
+  sparse_weight: 1.0
+  dense_weight: 0.5
+  dense_weight_temporal: null
+  dense_weight_skill: null
+  w_root: 0.8
+  w_leaf2tree: 2.0
+  w_bind: 1.2
+  tree_rrf_k: 0
+  leaf2tree_rrf_k: 60
+  max_hits_per_tree:
+    channel: 3
+    actor: 1
+    artifact: 1
+  require_summaries_for_root: true
+  trees_per_view:
+    channel: 2
+    actor: 4
+    artifact: 2
+  spans_per_view:
+    channel: 14
+    actor: 8
+    artifact: 0.2
+  persona_spans_per_view:
+    channel: 8
+    actor: 14
+    artifact: 0.1
+  default_trees_per_view: 2
+  default_spans_per_view: 6
+  max_spans: 20
+  span_rrf_k: 4
+  aggregation: max
+  bind_mode: pin
+  variant_decay: 0.5
+s2:
+  enabled: true
+  mode: scan
+  m: 8
+  beam_width: null
+  refine_to: 1
+  min_level: 1
+  epsilon: 0.05
+  source: dense
+  leaf_agg: max
+  extra_leaves_per_path: 0
+s3:
+  enabled: true
+  k_anchor: 8
+  k_pivot: 3
+  max_pairs: 12
+  pivot_lifecycle: start
+  strip_channel_phrases: true
+  require_forward: true
+  task_pair_margin: 1.15
+  task_max_days: 90
+expansion:
+  s1_span_budget: 14
+  span_budget: 6
+  bridge_hop: false
+  bridge_span_budget: 2
+s4:
+  budget_tokens: 3000
+  max_spans: 20
+  max_depth: 2
+  depth_policy: spec
+  style: structured
+  header_budget_frac: 0.35
+  section_headers: on_change
+  lifecycle_marks: true
+  duration_headers: true
+  leaf_up_headers: true
+  marker_marks: true
+  sufficiency_header: true
+  rank_numbers: true
+  render_display_names: true
+  render_seconds: true
+  persona_cards: false
+  actor_evidence_spans: 0
+  norm_spans: 3
+bridges:
+  enabled: true
+  generators:
+  - ident
+  - mention
+  margin: 1.25
+  floor: 0.5
+  semantic_floor: 0.75
+  per_node: 2
+fallback:
+  enabled: true
+  min_spans: 3
+  min_tree_score: 0.0
+  k: 20
+tag_enrich:
+  mode: eager
+  role: tag_enrich
+  max_inflight: 256
+  request_batch: 1
+  prompt_version: v1
+  context_window: 3
+summariser:
+  mode: eager
+  role: summarize
+  max_inflight: null
+embeddings:
+  enabled: true
+  model: Qwen/Qwen3-Embedding-0.6B
+  device: auto
+  cache_dir: data/index/{batch}/embeddings
+  batch: 32
+  node_device: auto
+  node_batch: 16
+  node_max_seq_length: 512
+  node_chunk: 128
+  node_workers: 1
+eval:
+  top_k: 10
+  answer_concurrency: 8
+  judge_concurrency: 8
+  judge_runs: 3
